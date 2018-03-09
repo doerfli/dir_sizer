@@ -7,21 +7,30 @@ class DirSizer
       exit(3)
     end
     puts "Calculating size of directory #{dir}"
-    size = size(dir)
+    size_hash = calculate_size_hash(dir)
+    size = calculate_size(size_hash)
     puts "the size is #{size} bytes"
   end
 
-  def self.size(dir)
+  def self.calculate_size_hash(dir)
     puts "sizing directory #{dir}"
-    Dir.entries(dir).map { |e|
+    r = { :dirs => {}, :files => {}}
+    Dir.entries(dir).each { |e|
       next if ['.', '..'].include? e
       t = File.join(dir, e)
       if File.directory?(t)
-        size(t)
+        r[:dirs][t] = calculate_size_hash(t)
       else
-        #puts "sizing file #{t}"
-        File.stat(t).size
+        r[:files][t] = File.stat(t).size
       end
-    }.select{|t| !t.nil? }.inject{ |sum,n| sum + n }
+    }
+    r
   end
+
+  def self.calculate_size(h)
+    size_files = h[:files].values.inject { |sum, n| sum + n } || 0
+    size_dirs = h[:dirs].values.map { |d| calculate_size(d) }.inject { |sum, n| sum + n } || 0
+    size_files + size_dirs
+  end
+
 end

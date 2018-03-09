@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'dir_sizer'
+puts DirSizer.execute(ARGV[0])

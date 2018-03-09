@@ -1,0 +1,21 @@
+PATH
+  remote: .
+  specs:
+    dir_sizer (0.0.0)
+      sys-filesystem (~> 1.1.9)
+
+GEM
+  remote: https://www.rubygems.org/
+  specs:
+    ffi (1.9.23)
+    sys-filesystem (1.1.9)
+      ffi
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  dir_sizer!
+
+BUNDLED WITH
+   1.16.1

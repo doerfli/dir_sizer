@@ -1,13 +1,15 @@
 PATH
   remote: .
   specs:
-    dir_sizer (0.0.0)
+    dir_sizer (0.1.0)
+      filesize (~> 0.1.1)
       sys-filesystem (~> 1.1.9)
 
 GEM
   remote: https://www.rubygems.org/
   specs:
     ffi (1.9.23)
+    filesize (0.1.1)
     sys-filesystem (1.1.9)
       ffi
 

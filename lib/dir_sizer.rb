@@ -1,4 +1,4 @@
-#require 'dir'
+require 'filesize'
 
 class DirSizer
   def self.execute(dir)
@@ -9,11 +9,12 @@ class DirSizer
     puts "Calculating size of directory #{dir}"
     size_hash = calculate_size_hash(dir)
     size = calculate_size(size_hash)
-    puts "the size is #{size} bytes"
+    puts "!"
+    puts "the size is #{Filesize.from("#{size} B").pretty}"
   end
 
   def self.calculate_size_hash(dir)
-    puts "sizing directory #{dir}"
+    print '.'
     r = { :dirs => {}, :files => {}}
     Dir.entries(dir).each { |e|
       next if ['.', '..'].include? e

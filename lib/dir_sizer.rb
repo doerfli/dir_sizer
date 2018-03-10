@@ -1,6 +1,7 @@
 require 'filesize'
 require 'terminal-table'
 require 'highline'
+require 'sys/filesystem'
 
 class DirSizer
   def self.execute(dir)
@@ -8,6 +9,8 @@ class DirSizer
       puts "not a directory: #{dir}"
       exit(3)
     end
+    init_mountpoints(dir)
+
     puts "Calculating size of directory #{dir}"
     size_hash = calculate_size_hash(dir)
     contents = calculate_size(size_hash)
@@ -16,12 +19,21 @@ class DirSizer
     browse_contents(contents)
   end
 
+  def self.init_mountpoints(dir)
+    @dirs_to_ignore = ['/dev', '/private/var/db/ConfigurationProfiles/Store']
+    Sys::Filesystem.mounts{ |mount|
+      @dirs_to_ignore << mount.mount_point unless mount.mount_point == dir
+    }
+  end
+
   def self.calculate_size_hash(dir)
     print '.'
     r = { :dirs => {}, :files => {}, :dir => dir}
     Dir.entries(dir).each { |e|
       next if ['.', '..'].include? e
       t = File.join(dir, e)
+      next if File.symlink? t
+      next if @dirs_to_ignore.include? t
       if File.directory?(t)
         r[:dirs][t] = calculate_size_hash(t)
       else

@@ -9,7 +9,7 @@ class DirSizer
       puts "not a directory: #{dir}"
       exit(3)
     end
-    init_mountpoints(dir)
+    init_dirs_to_ignore(dir)
 
     puts "Calculating size of directory #{dir}"
     size_hash = calculate_size_hash(dir)
@@ -19,15 +19,15 @@ class DirSizer
     browse_contents(contents)
   end
 
-  def self.init_mountpoints(dir)
-    @dirs_to_ignore = ['/dev', '/private/var/db/ConfigurationProfiles/Store']
+  def self.init_dirs_to_ignore(dir)
+    @dirs_to_ignore = ['/dev', '/private/var/db/ConfigurationProfiles/Store', '/private/var/folders']
     Sys::Filesystem.mounts{ |mount|
       @dirs_to_ignore << mount.mount_point unless mount.mount_point == dir
     }
   end
 
   def self.calculate_size_hash(dir)
-    print '.'
+    #print '.'
     r = { :dirs => {}, :files => {}, :dir => dir}
     Dir.entries(dir).each { |e|
       next if ['.', '..'].include? e

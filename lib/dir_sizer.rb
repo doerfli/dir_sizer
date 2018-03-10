@@ -53,7 +53,7 @@ class DirSizer
 
     loop do
       output = []
-      output << ['.',Filesize.from("#{contents[:total]} B").pretty,contents[:dir]]
+      output << ['',Filesize.from("#{contents[:total]} B").pretty,contents[:dir]]
       i = 0
       contents[:dirs_by_size].each{ |t|
         s = Filesize.from("#{t[1][:total]} B").pretty
@@ -63,7 +63,7 @@ class DirSizer
       table = Terminal::Table.new :headings => ['Cmd', 'Dir', 'Size'], :rows => output
       puts table
 
-      a = cli.ask("Number of directory? ('e' to exit)")
+      a = cli.ask("Type number of directory? ('..' for parent directory, 'e' to exit)")
 
       case a
       when 'e'

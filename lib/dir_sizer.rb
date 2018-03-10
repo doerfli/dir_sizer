@@ -32,18 +32,16 @@ class DirSizer
   end
 
   def self.calculate_size(hash)
-    r = { :dirs => {}, :total => 0, :dirs_by_size => nil, :dir => hash[:dir] }
-    size_files = hash[:files].values.inject { |sum, n| sum + n } || 0
+    t = {}
     hash[:dirs].each { |d,h|
       size_d = calculate_size(h)
-      r[:dirs][d] = size_d
+      t[d] = size_d
     }
-    size_dirs = r[:dirs].values.map{ |v|
+    size_dirs = t.values.map{ |v|
       v[:total]
     }.inject { |sum, n| sum + n } || 0
-    r[:total] = size_files + size_dirs
-    r[:dirs_by_size] = r[:dirs].sort_by{|d,h| h[:total] }.reverse
-    r
+    size_files = hash[:files].values.inject { |sum, n| sum + n } || 0
+    { :dirs => t, :total => size_files + size_dirs, :dirs_by_size => t.sort_by{|d,h| h[:total] }.reverse, :dir => hash[:dir] }
   end
 
   def self.browse_contents(content)
@@ -52,19 +50,8 @@ class DirSizer
     back_stack = []
 
     loop do
-      output = []
-      output << ['',Filesize.from("#{contents[:total]} B").pretty,contents[:dir]]
-      i = 0
-      contents[:dirs_by_size].each{ |t|
-        s = Filesize.from("#{t[1][:total]} B").pretty
-        output << [i,s,t[0]]
-        i = i + 1
-      }
-      table = Terminal::Table.new :headings => ['Cmd', 'Dir', 'Size'], :rows => output
-      puts table
-
+      print_table contents
       a = cli.ask("Type number of directory? ('..' for parent directory, 'e' to exit)")
-
       case a
       when 'e'
         break
@@ -76,6 +63,16 @@ class DirSizer
         contents = contents[:dirs][next_dir]
       end
     end
+  end
+
+  def self.print_table(contents)
+    output = []
+    output << ['', Filesize.from("#{contents[:total]} B").pretty, contents[:dir]]
+    contents[:dirs_by_size].each_with_index{ |t,i|
+      s = Filesize.from("#{t[1][:total]} B").pretty
+      output << [i, s, t[0]]
+    }
+    puts Terminal::Table.new :headings => ['Cmd', 'Dir', 'Size'], :rows => output
   end
 
 end

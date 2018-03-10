@@ -20,14 +20,15 @@ class DirSizer
   end
 
   def self.init_dirs_to_ignore(dir)
-    @dirs_to_ignore = ['/dev', '/private/var/db/ConfigurationProfiles/Store', '/private/var/folders']
+    @dirs_to_ignore = ['/dev', '/private/var/db/ConfigurationProfiles/Store', '/private/var/folders', '/Volumes/com.apple.TimeMachine.localsnapshots']
     Sys::Filesystem.mounts{ |mount|
       @dirs_to_ignore << mount.mount_point unless mount.mount_point == dir
     }
   end
 
   def self.calculate_size_hash(dir)
-    #print '.'
+    print '.' if dir.count('/') < 6
+    print dir if dir.count('/') < 4
     r = { :dirs => {}, :files => {}, :dir => dir}
     Dir.entries(dir).each { |e|
       next if ['.', '..'].include? e
